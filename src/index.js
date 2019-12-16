@@ -59,54 +59,52 @@ module.exports = (projects, dbPathName, resourcePath) => {
     }, {});
 
   return {
-    '/quanresource/(.*)': {
-      mount: (ctx, next) => {
-        const prefix = ctx.matchs[0].slice(0, ctx.matchs[0].length - ctx.matchs[1].length);
+    '/quanresource/(.*)': (ctx, next) => {
+      const prefix = ctx.matchs[0].slice(0, ctx.matchs[0].length - ctx.matchs[1].length);
 
-        const name = ctx.get('x-quan-name');
-        if (!name) {
-          ctx.throw(401);
-        }
-        const projectItem = projects[name];
-        if (!projectItem || projectItem.key !== ctx.get('x-quan-key')) {
-          ctx.throw(401);
-        }
+      const name = ctx.get('x-quan-name');
+      if (!name) {
+        ctx.throw(401);
+      }
+      const projectItem = projects[name];
+      if (!projectItem || projectItem.key !== ctx.get('x-quan-key')) {
+        ctx.throw(401);
+      }
 
-        ctx.resourcePath = resourcePath;
-        ctx.db = db;
-        ctx.resourceName = name;
+      ctx.resourcePath = resourcePath;
+      ctx.db = db;
+      ctx.resourceName = name;
 
-        return router({
-          [`${prefix}resources`]: {
-            get: {
-              body: require('./apis/list'),
-            },
+      return router({
+        [`${prefix}resources`]: {
+          get: {
+            body: require('./apis/list'),
           },
-          [`${prefix}resource`]: {
-            get: {
-              body: require('./apis/current'),
-            },
-            post: {
-              body: require('./apis/upload'),
-            },
+        },
+        [`${prefix}resource`]: {
+          get: {
+            body: require('./apis/current'),
           },
-          [`${prefix}resource/prev`]: {
-            put: {
-              body: require('./apis/prev'),
-            },
+          post: {
+            body: require('./apis/upload'),
           },
-          [`${prefix}resource/last`]: {
-            put: {
-              body: require('./apis/last'),
-            },
+        },
+        [`${prefix}resource/prev`]: {
+          put: {
+            body: require('./apis/prev'),
           },
-          [`${prefix}resource/:id`]: {
-            put: {
-              body: require('./apis/update'),
-            },
+        },
+        [`${prefix}resource/last`]: {
+          put: {
+            body: require('./apis/last'),
           },
-        })(ctx, next);
-      },
+        },
+        [`${prefix}resource/:id`]: {
+          put: {
+            body: require('./apis/update'),
+          },
+        },
+      })(ctx, next);
     },
     ...staticApis,
   };
