@@ -23,7 +23,7 @@ const getFileList = (pathName) => {
 };
 
 module.exports = async (ctx) => {
-  const id = uuid();
+  const id = uuid.v4();
   const dirname = path.join(ctx.resourcePath, id);
   fs.mkdirSync(dirname);
 
