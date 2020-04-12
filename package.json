@@ -1,6 +1,6 @@
 {
   "name": "@quanxiaoxiao/www",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
   "keywords": [],
   "author": "",
@@ -10,7 +10,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "@quanxiaoxiao/router": "0.0.20",
+    "@quanxiaoxiao/router": "0.0.21",
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
     "on-finished": "^2.3.0",
