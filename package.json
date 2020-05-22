@@ -1,6 +1,6 @@
 {
   "name": "@quanxiaoxiao/www",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "keywords": [],
   "author": "",
@@ -10,13 +10,13 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "@quanxiaoxiao/router": "0.0.22",
+    "@quanxiaoxiao/router": "0.0.23",
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
     "on-finished": "^2.3.0",
     "shelljs": "^0.8.4",
     "tar": "^6.0.2",
-    "uuid": "^8.0.0"
+    "uuid": "^8.1.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
