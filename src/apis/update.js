@@ -1,10 +1,10 @@
 module.exports = (ctx) => {
-  const id = ctx.matchs[1];
+  const _id = ctx.matchs[1];
   const item = ctx
     .db
     .get('records')
     .find({
-      _id: id,
+      _id,
       name: ctx.resourceName,
     })
     .value();
@@ -13,7 +13,7 @@ module.exports = (ctx) => {
   }
   ctx
     .db
-    .set(`current.${ctx.resourceName}`, id)
+    .set(`current.${ctx.resourceName}`, _id)
     .write();
-  return id;
+  return _id;
 };

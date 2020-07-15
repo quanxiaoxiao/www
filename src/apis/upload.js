@@ -23,8 +23,8 @@ const getFileList = (pathName) => {
 };
 
 module.exports = async (ctx) => {
-  const id = uuid.v4();
-  const dirname = path.join(ctx.resourcePath, id);
+  const _id = uuid.v4();
+  const dirname = path.join(ctx.resourcePath, _id);
   fs.mkdirSync(dirname);
 
   ctx.req.pipe(tar.x({
@@ -43,7 +43,7 @@ module.exports = async (ctx) => {
   db
     .get('records')
     .push({
-      _id: id,
+      _id,
       name: ctx.resourceName,
       message: ctx.query.message || '',
       timeCreate: now,
@@ -62,8 +62,8 @@ module.exports = async (ctx) => {
 
 
   db
-    .set(`current.${ctx.resourceName}`, id)
+    .set(`current.${ctx.resourceName}`, _id)
     .write();
 
-  return id;
+  return _id;
 };

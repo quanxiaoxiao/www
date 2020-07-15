@@ -1,15 +1,41 @@
 const path = require('path');
 const shelljs = require('shelljs');
+const _ = require('lodash');
 const low = require('lowdb');
 const router = require('@quanxiaoxiao/router');
 const FileSync = require('lowdb/adapters/FileSync');
 
-module.exports = (projects, dbPathName, resourcePath) => {
+module.exports = (projects, {
+  dbPathName,
+  resourcePath,
+  prefix,
+  logger,
+  getResourceName,
+}) => {
+  if (!_.isFunction(getResourceName)) {
+    throw new Error('getResourceName not is function');
+  }
+  if (prefix == null || prefix === '') {
+    prefix = '/';
+  }
+  if (prefix !== '/' && !/^\/\w+\/?(\/\w+\/?)*$/.test(prefix)) {
+    throw new Error('prefix is not set or invliad');
+  }
+  prefix = prefix.replace(/\/$/, '');
+  if (logger && logger.info) {
+    logger.info(`set www prefix: \`${prefix}\``);
+  }
   if (!shelljs.test('-d', path.dirname(dbPathName))) {
     shelljs.mkdir('-p', path.dirname(dbPathName));
+    if (logger && logger.info) {
+      logger.info(`set www db path \`${path.dirname(dbPathName)}\``);
+    }
   }
   if (!shelljs.test('-d', resourcePath)) {
     shelljs.mkdir('-p', resourcePath);
+    if (logger && logger.info) {
+      logger.info(`set www dist path \`${resourcePath}\``);
+    }
   }
   const adapter = new FileSync(dbPathName);
 
@@ -59,29 +85,27 @@ module.exports = (projects, dbPathName, resourcePath) => {
     }, {});
 
   return {
-    '/quanresource/(.*)': (ctx, next) => {
-      const prefix = ctx.matchs[0].slice(0, ctx.matchs[0].length - ctx.matchs[1].length);
-
-      const name = ctx.get('x-quan-name');
-      if (!name) {
+    [`${prefix}/(.*)`]: (ctx, next) => {
+      const resourceName = getResourceName(ctx);
+      if (!resourceName) {
         ctx.throw(401);
       }
-      const projectItem = projects[name];
-      if (!projectItem || projectItem.key !== ctx.get('x-quan-key')) {
+      const projectItem = projects[resourceName];
+      if (!projectItem) {
         ctx.throw(401);
       }
 
       ctx.resourcePath = resourcePath;
       ctx.db = db;
-      ctx.resourceName = name;
+      ctx.resourceName = resourceName;
 
       return router({
-        [`${prefix}resources`]: {
+        [`${prefix}/resources`]: {
           get: {
             body: require('./apis/list'),
           },
         },
-        [`${prefix}resource`]: {
+        [`${prefix}/resource`]: {
           get: {
             body: require('./apis/current'),
           },
@@ -89,19 +113,24 @@ module.exports = (projects, dbPathName, resourcePath) => {
             body: require('./apis/upload'),
           },
         },
-        [`${prefix}resource/prev`]: {
+        [`${prefix}/resource/prev`]: {
           put: {
             body: require('./apis/prev'),
           },
         },
-        [`${prefix}resource/last`]: {
+        [`${prefix}/resource/last`]: {
           put: {
             body: require('./apis/last'),
           },
         },
-        [`${prefix}resource/:id`]: {
+        [`${prefix}/resource/:id`]: {
           put: {
             body: require('./apis/update'),
+          },
+        },
+        [`${prefix}/pack/:id?`]: {
+          get: {
+            body: require('./apis/pack'),
           },
         },
       })(ctx, next);
