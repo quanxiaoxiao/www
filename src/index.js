@@ -67,6 +67,9 @@ module.exports = (projects, {
               currentName,
               getFilePathanme(ctx.matchs),
             );
+            if (pathname.indexOf(path.resolve(resourcePath, currentName)) !== 0) {
+              ctx.throw(400);
+            }
             ctx.type = path.extname(pathname);
             return pathname;
           },
