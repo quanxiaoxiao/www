@@ -1,6 +1,6 @@
 {
   "name": "@quanxiaoxiao/www",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "",
   "keywords": [],
   "author": "",
@@ -10,21 +10,21 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "@quanxiaoxiao/router": "0.0.24",
-    "lodash": "^4.17.19",
+    "@quanxiaoxiao/router": "0.0.26",
+    "lodash": "^4.17.20",
     "lowdb": "^1.0.0",
     "on-finished": "^2.3.0",
     "shelljs": "^0.8.4",
-    "tar": "^6.0.2",
-    "uuid": "^8.3.0"
+    "tar": "^6.0.5",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.6.0",
+    "eslint": "^7.11.0",
     "eslint-config-airbnb": "^18.2.0",
-    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-react": "^7.20.6",
-    "eslint-plugin-react-hooks": "^4.0.8"
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0"
   }
 }

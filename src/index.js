@@ -62,15 +62,26 @@ module.exports = (projects, {
             if (!currentName) {
               ctx.throw(404);
             }
+            const recordItem = db.get('records')
+              .find({
+                _id: currentName,
+              }).value();
+            if (!recordItem || _.isEmpty(recordItem.list)) {
+              ctx.throw(404);
+            }
+            const resourcePathname = getFilePathanme(ctx.matchs);
+
+            const resourceItem = recordItem.list.find((item) => item.path === resourcePathname);
+            if (!resourceItem) {
+              ctx.throw(404);
+            }
             const pathname = path.join(
               resourcePath,
               currentName,
-              getFilePathanme(ctx.matchs),
+              resourceItem.path,
             );
-            if (pathname.indexOf(path.resolve(resourcePath, currentName)) !== 0) {
-              ctx.throw(400);
-            }
             ctx.type = path.extname(pathname);
+            ctx.response.etag = JSON.stringify(resourceItem.hash);
             return pathname;
           },
         },
