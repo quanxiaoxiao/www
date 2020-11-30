@@ -37,33 +37,33 @@ module.exports = async (ctx) => {
   const { db } = ctx;
 
   const now = Date.now();
+  setTimeout(() => {
+    const resourceList = getFileList(dirname);
 
-  const resourceList = getFileList(dirname);
+    db
+      .get('records')
+      .push({
+        _id,
+        name: ctx.resourceName,
+        message: ctx.query.message || '',
+        timeCreate: now,
+        tag: ctx.query.tag || null,
+        list: resourceList.map((filePathname) => {
+          const buf = fs.readFileSync(filePathname);
+          const hash = crypto.createHash('sha256');
+          hash.update(buf);
+          return {
+            path: filePathname.slice(dirname.length + 1),
+            hash: hash.digest('hex'),
+          };
+        }),
+      })
+      .write();
 
-  db
-    .get('records')
-    .push({
-      _id,
-      name: ctx.resourceName,
-      message: ctx.query.message || '',
-      timeCreate: now,
-      tag: ctx.query.tag || null,
-      list: resourceList.map((filePathname) => {
-        const buf = fs.readFileSync(filePathname);
-        const hash = crypto.createHash('sha256');
-        hash.update(buf);
-        return {
-          path: filePathname.slice(dirname.length + 1),
-          hash: hash.digest('hex'),
-        };
-      }),
-    })
-    .write();
-
-
-  db
-    .set(`current.${ctx.resourceName}`, _id)
-    .write();
+    db
+      .set(`current.${ctx.resourceName}`, _id)
+      .write();
+  }, 20);
 
   return _id;
 };
