@@ -1,5 +1,6 @@
 const path = require('path');
 const shelljs = require('shelljs');
+const fs = require('fs');
 const _ = require('lodash');
 const low = require('lowdb');
 const router = require('@quanxiaoxiao/router');
@@ -57,7 +58,7 @@ module.exports = (projects, {
       ...acc,
       [key]: {
         get: {
-          file: (ctx) => {
+          body: (ctx) => {
             const currentName = db.get(`current.${name}`).value();
             if (!currentName) {
               ctx.throw(404);
@@ -75,14 +76,18 @@ module.exports = (projects, {
             if (!resourceItem) {
               ctx.throw(404);
             }
+            if (ctx.get('if-none-match') === resourceItem.hash) {
+              ctx.status = 304;
+              return null;
+            }
             const pathname = path.join(
               resourcePath,
               currentName,
               resourceItem.path,
             );
             ctx.type = path.extname(pathname);
-            ctx.response.etag = JSON.stringify(resourceItem.hash);
-            return pathname;
+            ctx.set('etag', resourceItem.hash);
+            return fs.createReadStream(pathname);
           },
         },
       },
